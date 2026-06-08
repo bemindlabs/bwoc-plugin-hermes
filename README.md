@@ -8,7 +8,7 @@
   <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
   <img alt="Status" src="https://img.shields.io/badge/status-WIP-orange">
   <img alt="Host" src="https://img.shields.io/badge/host-Hermes-8b5cf6">
-  <img alt="Part of BWOC" src="https://img.shields.io/badge/part%20of-BWOC%20%E5%85%AB%E4%BB%99-6f42c1">
+  <img alt="Part of BWOC" src="https://img.shields.io/badge/part%20of-BWOC-6f42c1">
   <img alt="Runtime" src="https://img.shields.io/badge/runtime-Python-3776ab">
 </p>
 
@@ -21,7 +21,7 @@
 Hermes plugins are Python: a `plugin.yaml` manifest plus a `register(ctx)` entrypoint that calls `ctx.register_tool(...)`, `ctx.register_command(...)`, and friends. Each tool handler shells out to `bwoc` and returns a JSON string.
 
 > [!NOTE]
-> **Status: WIP.** Manifest + `register()` entrypoint are in place; tool/handler bodies are landing incrementally. See the [roadmap](#️-roadmap).
+> **Status: WIP.** Coordination tools, the `hermes bwoc` CLI command, and a memory provider are implemented and unit-tested (`pytest`). Some Hermes host bindings are TODO-guarded pending confirmation — see the [roadmap](#️-roadmap).
 
 ## 🧩 What it exposes
 
@@ -109,23 +109,24 @@ python -m build              # build
 ## 🗺️ Roadmap
 
 - [x] Scaffold: `plugin.yaml`, `register()` entrypoint, packaging
-- [ ] Coordination tools + schemas (`list/status/send/run/chat/task/team`)
-- [ ] `hermes bwoc <sub>` CLI command
+- [x] Coordination tools + schemas (`list/status/send/run/chat/task/team`)
+- [x] `hermes bwoc <sub>` CLI command
+- [x] `MemoryProvider` bridging `bwoc memory`
+- [x] `pytest` coverage
 - [ ] Skill re-export (`register_skill`)
-- [ ] `MemoryProvider` bridging `bwoc memory`
-- [ ] `pytest` coverage + smoke test in Hermes
+- [ ] Confirm Hermes host bindings + smoke test
 
-## 🌊 The Eight Immortals host-adapter set
+## 🔗 BWOC host-adapter set
 
-One of five BWOC → host adapters — **八仙過海・各顯神通** (the Eight Immortals cross the sea, each by their own power):
+One of five BWOC → host adapters, one per agent host:
 
-| Host | Repo | Steward |
-|---|---|---|
-| Claude Code | [bwoc-plugin-claude](https://github.com/bemindlabs/bwoc-plugin-claude) | 呂洞賓 Lü Dongbin |
-| OpenAI Codex | [bwoc-plugin-codex](https://github.com/bemindlabs/bwoc-plugin-codex) | 曹國舅 Cao Guojiu |
-| Antigravity | [bwoc-plugin-agy](https://github.com/bemindlabs/bwoc-plugin-agy) | 張果老 Zhang Guolao |
-| OpenClaw | [bwoc-plugin-openclaw](https://github.com/bemindlabs/bwoc-plugin-openclaw) | 鐵拐李 Li Tieguai |
-| **Hermes** | [bwoc-plugin-hermes](https://github.com/bemindlabs/bwoc-plugin-hermes) | 漢鍾離 Han Zhongli |
+| Host | Repo |
+|---|---|
+| Claude Code | [bwoc-plugin-claude](https://github.com/bemindlabs/bwoc-plugin-claude) |
+| OpenAI Codex | [bwoc-plugin-codex](https://github.com/bemindlabs/bwoc-plugin-codex) |
+| Antigravity | [bwoc-plugin-agy](https://github.com/bemindlabs/bwoc-plugin-agy) |
+| OpenClaw | [bwoc-plugin-openclaw](https://github.com/bemindlabs/bwoc-plugin-openclaw) |
+| **Hermes** | [bwoc-plugin-hermes](https://github.com/bemindlabs/bwoc-plugin-hermes) |
 
 ## 🙏 Maintainer
 
