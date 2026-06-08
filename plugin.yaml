@@ -1,0 +1,4 @@
+name: bwoc
+version: "0.1"
+description: BWOC fleet adapter for Hermes — tools, skills, and a memory provider that wrap the bwoc CLI.
+requires_env: []

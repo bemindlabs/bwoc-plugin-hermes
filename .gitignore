@@ -1,0 +1,9 @@
+# BWOC agent worktrees (debase worktreeBase points here)
+/worktrees/
+.DS_Store
+.bwoc/
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+*.egg-info/
