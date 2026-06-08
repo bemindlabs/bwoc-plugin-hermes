@@ -10,6 +10,8 @@ here rather than registered through `ctx`.
 from __future__ import annotations
 
 import json
+import os
+from pathlib import Path
 
 from . import schemas, tools
 from .memory import BwocMemoryProvider
@@ -56,6 +58,51 @@ def register(ctx) -> None:
     # `BwocMemoryProvider` via provider discovery. See:
     # https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins
     _register_memory(ctx)
+
+    # 5) Skill re-export — register each BWOC framework skill as a Hermes skill.
+    _register_skills(ctx)
+
+
+def _register_skills(ctx) -> None:
+    """Generate + register BWOC framework skills as `plugin:skill` entries.
+
+    Best-effort: locates (or generates) skill stubs under `_skills/` and calls
+    `ctx.register_skill(name, path)` for each. Generation never blocks plugin
+    load; failures are swallowed so the rest of the plugin still registers.
+
+    TODO: confirm the exact `register_skill` signature/argument order against
+    the Hermes plugin docs:
+    https://hermes-agent.nousresearch.com/docs/user-guide/features/plugins
+    """
+    register_skill = getattr(ctx, "register_skill", None)
+    if not callable(register_skill):
+        return  # host has no skill-registration hook — nothing to do.
+
+    skills_root = Path(__file__).resolve().parent / "_skills"
+    try:
+        from . import skills
+
+        # Regenerate from the workspace when one is configured; otherwise reuse
+        # whatever stubs are already present on disk.
+        workspace = os.environ.get("BWOC_WORKSPACE")
+        if workspace:
+            skills.sync_skills(workspace, str(skills_root))
+    except Exception:
+        # Generation is opportunistic; fall through to any existing stubs.
+        pass
+
+    if not skills_root.is_dir():
+        return
+
+    for skill_dir in sorted(skills_root.glob("fw-*")):
+        if not skill_dir.is_dir():
+            continue
+        name = f"bwoc-{skill_dir.name}"  # fw-<skill> -> bwoc-fw-<skill>
+        try:
+            register_skill(name, str(skill_dir))
+        except Exception:
+            # Best-effort per skill; keep registering the rest.
+            continue
 
 
 def _register_memory(ctx) -> None:

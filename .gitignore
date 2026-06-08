@@ -7,3 +7,5 @@ __pycache__/
 .venv/
 dist/
 *.egg-info/
+# Generated skill re-export stubs (bwoc_plugin_hermes/skills.py)
+bwoc_plugin_hermes/_skills/

@@ -115,7 +115,7 @@ python -m build              # build
 - [x] `hermes bwoc <sub>` CLI command
 - [x] `MemoryProvider` bridging `bwoc memory`
 - [x] `pytest` coverage
-- [ ] Skill re-export (`register_skill`)
+- [x] Skill re-export (`register_skill`) — `bwoc_plugin_hermes/skills.py`
 - [ ] Confirm Hermes host bindings + smoke test
 
 ## 🔗 BWOC host-adapter set
