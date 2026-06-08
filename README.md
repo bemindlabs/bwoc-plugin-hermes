@@ -76,12 +76,12 @@ plugins:
 ```text
 # as tools (the agent calls these during a turn)
 bwoc_list                  # list registered agents
-bwoc_send agent-luban ...  # append a message to an agent's inbox
-bwoc_run  agent-luban ...  # run a single task headless
+bwoc_send <agent> ...  # append a message to an agent's inbox
+bwoc_run  <agent> ...  # run a single task headless
 
 # as a CLI subcommand
 hermes bwoc list
-hermes bwoc status agent-luban
+hermes bwoc status <agent>
 ```
 
 ## 🗂️ Repository layout
@@ -127,9 +127,9 @@ One of five BWOC → host adapters — **八仙過海・各顯神通** (the Eigh
 | OpenClaw | [bwoc-plugin-openclaw](https://github.com/bemindlabs/bwoc-plugin-openclaw) | 鐵拐李 Li Tieguai |
 | **Hermes** | [bwoc-plugin-hermes](https://github.com/bemindlabs/bwoc-plugin-hermes) | 漢鍾離 Han Zhongli |
 
-## 🙏 Steward
+## 🙏 Maintainer
 
-Maintained by **`agent-hanzhongli`** (漢鍾離 Han Zhongli) — the immortal whose fan revives the dead. A fitting patron for Hermes, the self-improving agent.
+Maintained by **Bemind Technology**, part of the BWOC host-adapter set. This connector is **generic**: it ships no agents, teams, or workspace identities of its own — it discovers your fleet from the local `bwoc` workspace at runtime.
 
 ## 🤝 Contributing
 

@@ -47,7 +47,7 @@ def register(ctx) -> None:
     ctx.register_command(
         name="bwoc",
         handler=_slash_handler,
-        description="Run a bwoc fleet command, e.g. `/bwoc list` or `/bwoc status agent-luban`.",
+        description="Run a bwoc fleet command, e.g. `/bwoc list` or `/bwoc status <agent>`.",
     )
 
     # 4) Memory provider.
