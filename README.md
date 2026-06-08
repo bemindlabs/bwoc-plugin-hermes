@@ -1,27 +1,140 @@
-# bwoc-plugin-hermes
+<h1 align="center">bwoc-plugin-hermes</h1>
 
-> **BWOC → Hermes plugin adapter.** Exposes the BWOC agent fleet — coordination CLI, agents-as-subagents, skills, and deep-memory — into **Hermes** by wrapping the `bwoc` CLI.
+<p align="center">
+  <strong>BWOC → Hermes</strong> plugin adapter — bring the BWOC agent fleet into <a href="https://hermes-agent.nousresearch.com">Hermes</a> (Nous Research).
+</p>
 
-**Status:** 🚧 WIP scaffold.
-Part of the BWOC **八仙過海・各顯神通** host-adapter set (Eight Immortals crossing the sea — each adapter crosses into a foreign host by its own plugin format).
+<p align="center">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+  <img alt="Status" src="https://img.shields.io/badge/status-WIP-orange">
+  <img alt="Host" src="https://img.shields.io/badge/host-Hermes-8b5cf6">
+  <img alt="Part of BWOC" src="https://img.shields.io/badge/part%20of-BWOC%20%E5%85%AB%E4%BB%99-6f42c1">
+  <img alt="Runtime" src="https://img.shields.io/badge/runtime-Python-3776ab">
+</p>
 
-**Steward:** `agent-hanzhongli` (Han Zhongli 漢鍾離) — debased to this project ([`bwoc debase`](https://github.com/bemindlabs/BWOC-Framework)).
+---
 
-## What it exposes
+## ✨ Overview
 
-| Surface | Wraps |
-|---|---|
-| Coordination | `bwoc list / status / send / run / chat / task / team` |
-| Agents | BWOC `agents/agent-*` re-exported as Hermes sub-agents |
-| Skills | BWOC skills re-exported as Hermes skills |
-| Deep-memory | `bwoc memory` bridge |
+`bwoc-plugin-hermes` is a **Hermes plugin** that registers the [**BWOC**](https://github.com/bemindlabs/BWOC-Framework) agent fleet into a Hermes agent: coordination **tools**, slash/CLI **commands**, **skills**, and a **memory provider** — all wrapping the `bwoc` CLI.
 
-Mechanism: **shell-out to the `bwoc` CLI** — no standing server. The host must have `bwoc` on `PATH`.
+Hermes plugins are Python: a `plugin.yaml` manifest plus a `register(ctx)` entrypoint that calls `ctx.register_tool(...)`, `ctx.register_command(...)`, and friends. Each tool handler shells out to `bwoc` and returns a JSON string.
 
-## Manifest
+> [!NOTE]
+> **Status: WIP.** Manifest + `register()` entrypoint are in place; tool/handler bodies are landing incrementally. See the [roadmap](#️-roadmap).
 
-Host plugin manifest: `plugin.yaml`
+## 🧩 What it exposes
 
-## License
+| Surface | BWOC capability | Hermes API |
+|---|---|---|
+| **Tools** | Coordinate the fleet | `ctx.register_tool` → `bwoc list/status/send/run/chat/task/team` |
+| **Slash + CLI commands** | Quick fleet ops | `ctx.register_command` · `ctx.register_cli_command` (`hermes bwoc <sub>`) |
+| **Skills** | Reuse BWOC skills | `ctx.register_skill` |
+| **Memory provider** | Shared deep-memory | `MemoryProvider` subclass → `bwoc memory` |
 
-MIT © Bemind Technology
+## 🏗️ How it works
+
+```
+Hermes agent  ──tool call──▶  tools.py handler  ──subprocess──▶  bwoc CLI  ──▶  BWOC workspace
+                              (register_tool)                               (agents, teams,
+                                                                             tasks, memory)
+```
+
+Tool schemas live in `schemas.py` (LLM-facing JSON Schema); handlers in `tools.py` return `json.dumps({...})`. The host must have `bwoc` on `PATH`.
+
+## 📋 Prerequisites
+
+- [Hermes](https://hermes-agent.nousresearch.com) (Nous Research)
+- Python ≥ 3.10
+- The [`bwoc` CLI](https://github.com/bemindlabs/BWOC-Framework) installed and on `PATH`
+- A BWOC workspace (`bwoc init`) reachable from where Hermes runs
+
+## 📦 Installation
+
+```bash
+hermes plugins install bemindlabs/bwoc-plugin-hermes
+hermes plugins enable bwoc
+```
+
+Or clone into your Hermes plugins directory and enable:
+
+```bash
+git clone https://github.com/bemindlabs/bwoc-plugin-hermes ~/.hermes/plugins/bwoc
+hermes plugins enable bwoc
+```
+
+Then add to `~/.hermes/config.yaml`:
+
+```yaml
+plugins:
+  enabled:
+    - bwoc
+```
+
+## 🚀 Usage
+
+```text
+# as tools (the agent calls these during a turn)
+bwoc_list                  # list registered agents
+bwoc_send agent-luban ...  # append a message to an agent's inbox
+bwoc_run  agent-luban ...  # run a single task headless
+
+# as a CLI subcommand
+hermes bwoc list
+hermes bwoc status agent-luban
+```
+
+## 🗂️ Repository layout
+
+```
+bwoc-plugin-hermes/
+├── plugin.yaml                  # manifest (name/version/description/requires_env)
+├── pyproject.toml               # packaging
+└── bwoc_plugin_hermes/
+    ├── __init__.py              # register(ctx) entrypoint
+    ├── schemas.py               # tool JSON schemas (LLM-facing)
+    ├── tools.py                 # tool handlers (subprocess bwoc)
+    └── memory.py                # MemoryProvider bridging `bwoc memory`
+```
+
+## 🛠️ Development
+
+```bash
+ruff check .                 # lint
+ruff format .                # format
+pytest -q                    # test
+python -m build              # build
+```
+
+## 🗺️ Roadmap
+
+- [x] Scaffold: `plugin.yaml`, `register()` entrypoint, packaging
+- [ ] Coordination tools + schemas (`list/status/send/run/chat/task/team`)
+- [ ] `hermes bwoc <sub>` CLI command
+- [ ] Skill re-export (`register_skill`)
+- [ ] `MemoryProvider` bridging `bwoc memory`
+- [ ] `pytest` coverage + smoke test in Hermes
+
+## 🌊 The Eight Immortals host-adapter set
+
+One of five BWOC → host adapters — **八仙過海・各顯神通** (the Eight Immortals cross the sea, each by their own power):
+
+| Host | Repo | Steward |
+|---|---|---|
+| Claude Code | [bwoc-plugin-claude](https://github.com/bemindlabs/bwoc-plugin-claude) | 呂洞賓 Lü Dongbin |
+| OpenAI Codex | [bwoc-plugin-codex](https://github.com/bemindlabs/bwoc-plugin-codex) | 曹國舅 Cao Guojiu |
+| Antigravity | [bwoc-plugin-agy](https://github.com/bemindlabs/bwoc-plugin-agy) | 張果老 Zhang Guolao |
+| OpenClaw | [bwoc-plugin-openclaw](https://github.com/bemindlabs/bwoc-plugin-openclaw) | 鐵拐李 Li Tieguai |
+| **Hermes** | [bwoc-plugin-hermes](https://github.com/bemindlabs/bwoc-plugin-hermes) | 漢鍾離 Han Zhongli |
+
+## 🙏 Steward
+
+Maintained by **`agent-hanzhongli`** (漢鍾離 Han Zhongli) — the immortal whose fan revives the dead. A fitting patron for Hermes, the self-improving agent.
+
+## 🤝 Contributing
+
+Issues and PRs welcome. Keep handlers a **thin wrapper over the `bwoc` CLI** — logic belongs in the framework, not here.
+
+## 📄 License
+
+[MIT](LICENSE) © Bemind Technology
