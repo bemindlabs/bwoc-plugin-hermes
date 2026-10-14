@@ -1,4 +1,4 @@
-"""Contract test: every argv the adapter builds is one a real `bwoc` accepts.
+"""Contract test: every argv the adapter builds is one that a real `bwoc` accepts.
 
 Each wrapper in `cli` is called with every option set, against a stub that
 forwards the argv to the real CLI with `--help` appended. The CLI's parser
@@ -65,4 +65,5 @@ def test_argv_is_accepted_by_the_cli(forwarding_bwoc, name):
 
 def test_a_rejected_argv_fails(forwarding_bwoc):
     # Negative control: the stub really forwards, so a bad argv must fail.
-    assert not cli.run_bwoc("fleet", "--json")["ok"]
+    # A name bwoc will never ship (`fleet` became a real verb in bwoc 3.x).
+    assert not cli.run_bwoc("no-such-subcommand-x", "--json")["ok"]
